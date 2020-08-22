@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("financeiro")
 public class FinanceiroApiProperty {
 	
-	private String originPermitida = "https://stark-garden-05417.herokuapp.com";
+	private String originPermitida = "http://localhost:4200";
 
 	private final Seguranca seguranca = new Seguranca();
 	
