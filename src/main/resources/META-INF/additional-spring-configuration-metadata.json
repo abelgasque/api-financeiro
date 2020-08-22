@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "financeiro.mail.password",
+  "type": "java.lang.String",
+  "description": "A description for 'financeiro.mail.password'"
+}]}
