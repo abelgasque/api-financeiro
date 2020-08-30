@@ -59,11 +59,12 @@ public class Lancamento {
 	@JoinColumn(name="id_pessoa")
 	private Pessoa pessoa;
 	
+	@Size(max= 200)
 	@Column(name="anexo")
 	private String anexo;
 	
 	@Size(max= 200)
-	@Column(name="urlAnexo")
+	@Column(name="url_anexo")
 	private String urlAnexo;
 	
 	@JsonIgnore

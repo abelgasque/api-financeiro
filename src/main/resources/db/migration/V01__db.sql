@@ -35,7 +35,7 @@ CREATE TABLE lancamento(
 	observacao VARCHAR(100),
 	tipo VARCHAR(20) NOT NULL,
 	anexo VARCHAR(200),
-    urlAnexo VARCHAR(200),
+    url_anexo VARCHAR(200),
 	id_categoria BIGINT(20) NOT NULL,
 	id_pessoa BIGINT(20) NOT NULL,
 	CONSTRAINT fk_categoria_lancamento FOREIGN KEY (id_categoria) REFERENCES categoria(id),
@@ -68,16 +68,10 @@ INSERT INTO categoria(nome) VALUES('Farmácia');
 INSERT INTO categoria(nome) VALUES('Trabalho');
 INSERT INTO categoria(nome) VALUES('Outros');
 
-INSERT INTO pessoa(nome, cpf, situacao) VALUES('Abel Gasque','119.331.109-88','ATIVO');
-
-INSERT INTO contato(nome, email, telefone, id_pessoa) VALUES('Abel Gasque L. Silva', 'abelgasque20@gmail.com', '(48) 99999-9999', 1);
-
 INSERT INTO usuario(nome, email, senha) values('Abel', 'abelgasque20@gmail.com', '$2a$10$X607ZPhQ4EgGNaYKt3n4SONjIv9zc.VMWdEuhCuba7oLAL5IvcL5.');
-INSERT INTO usuario(nome, email, senha) values('João', 'abel_gl_silva@estudante.sc.senai.br', '$2a$10$X607ZPhQ4EgGNaYKt3n4SONjIv9zc.VMWdEuhCuba7oLAL5IvcL5.');
 
 INSERT INTO permissao(descricao) values('ROLE_ADMINISTRADOR');
 INSERT INTO permissao(descricao) values('ROLE_PESSOA');
 
 INSERT INTO usuario_permissao(id_usuario, id_permissao) values(1, 1);
-INSERT INTO usuario_permissao(id_usuario, id_permissao) values(2, 2);
 
