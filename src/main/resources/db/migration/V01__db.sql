@@ -35,6 +35,7 @@ CREATE TABLE lancamento(
 	observacao VARCHAR(100),
 	tipo VARCHAR(20) NOT NULL,
 	anexo VARCHAR(200),
+    urlAnexo VARCHAR(200),
 	id_categoria BIGINT(20) NOT NULL,
 	id_pessoa BIGINT(20) NOT NULL,
 	CONSTRAINT fk_categoria_lancamento FOREIGN KEY (id_categoria) REFERENCES categoria(id),
@@ -64,49 +65,19 @@ INSERT INTO categoria(nome) VALUES('Lazer');
 INSERT INTO categoria(nome) VALUES('Alimentação');
 INSERT INTO categoria(nome) VALUES('Supermercado');
 INSERT INTO categoria(nome) VALUES('Farmácia');
+INSERT INTO categoria(nome) VALUES('Trabalho');
 INSERT INTO categoria(nome) VALUES('Outros');
 
-INSERT INTO pessoa(nome,cpf,situacao) 
-VALUES('Abel Gasque','119.331.109-88','ATIVO');
+INSERT INTO pessoa(nome, cpf, situacao) VALUES('Abel Gasque','119.331.109-88','ATIVO');
 
-INSERT INTO contato(nome, email, telefone, id_pessoa) VALUES('Abel Gasque L. Silva', 'abelgasque20@gmail.com', '(48) 99999-9999',1);
+INSERT INTO contato(nome, email, telefone, id_pessoa) VALUES('Abel Gasque L. Silva', 'abelgasque20@gmail.com', '(48) 99999-9999', 1);
 
-INSERT INTO lancamento(descricao,data_vencimento,valor,tipo,id_categoria,id_pessoa) 
-VALUES('Crédito salário', '2020-07-07', 1047.98, 'RECEITA', 5, 1);
+INSERT INTO usuario(nome, email, senha) values('Abel', 'abelgasque20@gmail.com', '$2a$10$X607ZPhQ4EgGNaYKt3n4SONjIv9zc.VMWdEuhCuba7oLAL5IvcL5.');
+INSERT INTO usuario(nome, email, senha) values('João', 'abel_gl_silva@estudante.sc.senai.br', '$2a$10$X607ZPhQ4EgGNaYKt3n4SONjIv9zc.VMWdEuhCuba7oLAL5IvcL5.');
 
-INSERT INTO lancamento(descricao,data_vencimento,valor,tipo,id_categoria,id_pessoa) 
-VALUES('Pensão', '2020-07-01', 608.0, 'RECEITA', 5, 1);
-
-INSERT INTO lancamento(descricao,data_vencimento,data_pagamento,valor,tipo,id_categoria,id_pessoa) 
-VALUES('Mensalidade Faculdade', '2020-07-10','2020-07-08', 499.99, 'DESPESA', 5, 1);
-
-INSERT INTO lancamento(descricao,data_vencimento,data_pagamento,valor,tipo,id_categoria,id_pessoa) 
-VALUES('Cartão Crédito', '2020-07-15','2020-07-08', 150.99, 'DESPESA', 5, 1);
-
-INSERT INTO usuario(nome, email, senha) values('Administrador', 'admin@financeiro.com', '$2a$10$X607ZPhQ4EgGNaYKt3n4SONjIv9zc.VMWdEuhCuba7oLAL5IvcL5.');
-INSERT INTO usuario(nome, email, senha) values('Abel', 'abel@financeiro.com', '$2a$10$Zc3w6HyuPOPXamaMhh.PQOXvDnEsadztbfi6/RyZWJDzimE8WQjaq');
-
-INSERT INTO permissao(descricao) values('ROLE_CADASTRAR_categoria');
-INSERT INTO permissao(descricao) values('ROLE_REMOVER_categoria');
-INSERT INTO permissao(descricao) values('ROLE_PESQUISAR_categoria');
-
-INSERT INTO permissao(descricao) values('ROLE_CADASTRAR_pessoa');
-INSERT INTO permissao(descricao) values('ROLE_REMOVER_pessoa');
-INSERT INTO permissao(descricao) values('ROLE_PESQUISAR_pessoa');
-
-INSERT INTO permissao(descricao) values('ROLE_CADASTRAR_lancamento');
-INSERT INTO permissao(descricao) values('ROLE_REMOVER_lancamento');
-INSERT INTO permissao(descricao) values('ROLE_PESQUISAR_lancamento');
+INSERT INTO permissao(descricao) values('ROLE_ADMINISTRADOR');
+INSERT INTO permissao(descricao) values('ROLE_PESSOA');
 
 INSERT INTO usuario_permissao(id_usuario, id_permissao) values(1, 1);
-INSERT INTO usuario_permissao(id_usuario, id_permissao) values(1, 2);
-INSERT INTO usuario_permissao(id_usuario, id_permissao) values(1, 3);
-INSERT INTO usuario_permissao(id_usuario, id_permissao) values(1, 4);
-INSERT INTO usuario_permissao(id_usuario, id_permissao) values(1, 5);
-INSERT INTO usuario_permissao(id_usuario, id_permissao) values(1, 6);
-INSERT INTO usuario_permissao(id_usuario, id_permissao) values(1, 7);
-INSERT INTO usuario_permissao(id_usuario, id_permissao) values(1, 8);
-INSERT INTO usuario_permissao(id_usuario, id_permissao) values(1, 9);
-INSERT INTO usuario_permissao(id_usuario, id_permissao) values(2, 7);
-INSERT INTO usuario_permissao(id_usuario, id_permissao) values(2, 9);
+INSERT INTO usuario_permissao(id_usuario, id_permissao) values(2, 2);
 

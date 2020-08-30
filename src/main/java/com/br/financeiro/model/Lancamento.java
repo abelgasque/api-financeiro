@@ -13,7 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -63,7 +62,8 @@ public class Lancamento {
 	@Column(name="anexo")
 	private String anexo;
 	
-	@Transient
+	@Size(max= 200)
+	@Column(name="urlAnexo")
 	private String urlAnexo;
 	
 	@JsonIgnore

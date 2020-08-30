@@ -21,52 +21,57 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.br.financeiro.event.RecursoCriadoEvent;
-import com.br.financeiro.model.Categoria;
-import com.br.financeiro.service.CategoriaService;
+import com.br.financeiro.model.Usuario;
+import com.br.financeiro.service.UsuarioService;
 
 @RestController
-@RequestMapping("/categorias")
-public class CategoriaResource {
+@RequestMapping("/usuarios")
+public class UsuarioResource {
 	
 	@Autowired
-	private CategoriaService categoriaService;
+	private UsuarioService usuarioService;
 	
 	@Autowired
 	private ApplicationEventPublisher publisher;
 	
+//	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
+//	@GetMapping("/pesquisar")
+//	public ResponseEntity<?> pesquisar(UsuarioFilter filtro, Pageable pageable) {
+//		 Page<Usuario> lista = usuarioService.pesquisar(filtro, pageable);
+//		 return new ResponseEntity<Page<Usuario>>(lista,HttpStatus.OK);
+//	}
+	
 	@PostMapping
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('write')")
-	public ResponseEntity<?> criar(@Valid @RequestBody Categoria entidade, HttpServletResponse response) {
-		Categoria entidadeSalva = categoriaService.salvar(entidade);
+	public ResponseEntity<?> salvar(@Valid @RequestBody Usuario entidade, HttpServletResponse response) {
+		Usuario entidadeSalva = usuarioService.salvar(entidade);
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, entidadeSalva.getId()));
 		return ResponseEntity.status(HttpStatus.CREATED).body(entidadeSalva);
 	}
 	
 	@PutMapping
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('write')")
-	public ResponseEntity<?> editar(@RequestBody Categoria entidade){
-		Categoria entidadeSalva = this.categoriaService.editar(entidade);	
-		return new  ResponseEntity<Categoria>(entidadeSalva,HttpStatus.OK);
+	public ResponseEntity<?> editar(@RequestBody Usuario entidade){
+		Usuario entidadeSalva = this.usuarioService.editar(entidade);	
+		return new  ResponseEntity<Usuario>(entidadeSalva,HttpStatus.OK);
 	}
 	
-	@GetMapping("/{id}")
 	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
+	@GetMapping("/{id}")
 	public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
-		 Optional<Categoria> entidade = categoriaService.buscarPorId(id);
+		 Optional<Usuario> entidade = usuarioService.buscarPorId(id);
 		 return entidade != null ? ResponseEntity.ok(entidade) : ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping
 	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
+	@GetMapping
 	public ResponseEntity<?> listar(){
-		Iterable<Categoria> lista = this.categoriaService.listar();
-		return new ResponseEntity<Iterable<Categoria>>(lista,HttpStatus.OK);
+		Iterable<Usuario> lista = this.usuarioService.listar();
+		return new ResponseEntity<Iterable<Usuario>>(lista,HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/{id}")
 	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
+	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void excluir(@PathVariable("id") Long id){
-		this.categoriaService.excluir(id);
+		this.usuarioService.excluir(id);
 	}
 }
