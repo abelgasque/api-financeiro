@@ -11,6 +11,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.Valid;
@@ -49,6 +51,10 @@ public class Pessoa {
 	@Valid
 	@OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Contato> contatos;
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(name="id_usuario")
+	private Usuario usuario;
 	
 	@Override
 	public int hashCode() {
@@ -120,5 +126,13 @@ public class Pessoa {
 	
 	public void setContatos(List<Contato> contatos) {
 		this.contatos = contatos;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 }

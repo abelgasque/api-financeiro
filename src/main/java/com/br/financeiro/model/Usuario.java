@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -38,6 +40,11 @@ public class Usuario {
 	@Size(max= 150)
 	@Column(name="senha")
 	private String senha;
+	
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name="situacao")
+	private Situacao situacao;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name="usuario_permissao", joinColumns = @JoinColumn(name="id_usuario"),
@@ -107,5 +114,13 @@ public class Usuario {
 
 	public void setPermissoes(List<Permissao> permissoes) {
 		this.permissoes = permissoes;
+	}
+
+	public Situacao getSituacao() {
+		return situacao;
+	}
+
+	public void setSituacao(Situacao situacao) {
+		this.situacao = situacao;
 	}
 }

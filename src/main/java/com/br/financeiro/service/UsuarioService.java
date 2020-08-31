@@ -28,7 +28,7 @@ public class UsuarioService {
 	}
 	
 	public Usuario editar(Usuario entidade) {
-		Optional<Usuario> entidadeSalva = buscarPorId(entidade.getId());
+		Optional<Usuario> entidadeSalva = this.usuarioRepository.findById(entidade.getId());
 		Optional<Usuario> pesquisarPorEmail = this.usuarioRepository.findByEmail(entidade.getEmail());
 		if(!entidadeSalva.isPresent()) {
 			throw new EmptyResultDataAccessException(1);
@@ -38,6 +38,8 @@ public class UsuarioService {
 		}
 		if(entidade.getSenha() == null) {
 			entidade.setSenha(entidadeSalva.get().getSenha());
+		}else {
+			entidade.setSenha(gerarHash(entidade.getSenha()));
 		}
 		BeanUtils.copyProperties(entidade, entidadeSalva, "id");
 		return this.usuarioRepository.save(entidade);
