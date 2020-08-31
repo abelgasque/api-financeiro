@@ -1,5 +1,6 @@
 package com.br.financeiro.resource;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
@@ -66,6 +67,13 @@ public class UsuarioResource {
 	public ResponseEntity<?> listar(){
 		Iterable<Usuario> lista = this.usuarioService.listar();
 		return new ResponseEntity<Iterable<Usuario>>(lista,HttpStatus.OK);
+	}
+	
+	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
+	@GetMapping("/disponiveis")
+	public ResponseEntity<?> listaUsuariosDisponiveis(){
+		List<Usuario> lista = this.usuarioService.listaUsuariosDisponiveis();
+		return new ResponseEntity<List<Usuario>>(lista,HttpStatus.OK);
 	}
 	
 	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")

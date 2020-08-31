@@ -67,6 +67,13 @@ public class PessoaResource {
 	}
 	
 	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
+	@GetMapping("/buscar-por-usuario/{idUsuario}")
+	public ResponseEntity<?> buscarUsuarioById(@PathVariable("idUsuario") Long idUsuario) {
+		Optional<Pessoa> entidade = pessoaService.buscarUsuarioById(idUsuario);
+		return entidade != null ? ResponseEntity.ok(entidade) : ResponseEntity.notFound().build();
+	}
+	
+	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
 	@GetMapping
 	public ResponseEntity<?> listar(){
 		Iterable<Pessoa> lista = this.pessoaService.listar();

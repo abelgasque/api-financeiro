@@ -52,10 +52,18 @@ public class PessoaService {
 	}
 	
 	public void excluir(Long id) {
+		Optional<Pessoa> entidadeSalva = this.pessoaRepository.findById(id);
+		if(!entidadeSalva.isPresent()) {
+			throw new EmptyResultDataAccessException(1);
+		}
 		this.pessoaRepository.deleteById(id);
 	}
 	
 	public Iterable<Pessoa> listar() {
 		return pessoaRepository.findAll();
+	}
+	
+	public Optional<Pessoa> buscarUsuarioById(long idUsuario){
+		return this.pessoaRepository.buscarUsuarioById(idUsuario);
 	}
 }
