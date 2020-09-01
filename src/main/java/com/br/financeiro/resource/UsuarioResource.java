@@ -42,13 +42,14 @@ public class UsuarioResource {
 //		 return new ResponseEntity<Page<Usuario>>(lista,HttpStatus.OK);
 //	}
 	
-	@PostMapping
+	@PostMapping("/adicionar")
 	public ResponseEntity<?> salvar(@Valid @RequestBody Usuario entidade, HttpServletResponse response) {
 		Usuario entidadeSalva = usuarioService.salvar(entidade);
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, entidadeSalva.getId()));
 		return ResponseEntity.status(HttpStatus.CREATED).body(entidadeSalva);
 	}
 	
+	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('write')")
 	@PutMapping
 	public ResponseEntity<?> editar(@RequestBody Usuario entidade){
 		Usuario entidadeSalva = this.usuarioService.editar(entidade);	

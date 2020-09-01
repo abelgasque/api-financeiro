@@ -36,7 +36,7 @@ public class CategoriaResource {
 	
 	@PostMapping
 	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('write')")
-	public ResponseEntity<?> criar(@Valid @RequestBody Categoria entidade, HttpServletResponse response) {
+	public ResponseEntity<?> adicionar(@Valid @RequestBody Categoria entidade, HttpServletResponse response) {
 		Categoria entidadeSalva = categoriaService.salvar(entidade);
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, entidadeSalva.getId()));
 		return ResponseEntity.status(HttpStatus.CREATED).body(entidadeSalva);

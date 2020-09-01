@@ -18,8 +18,8 @@ public class PermissaoResource {
 	@Autowired
 	private PermissaoRepository permissaoRepository;
 	
-	@GetMapping
 	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
+	@GetMapping
 	public ResponseEntity<?> listar(){
 		Iterable<Permissao> lista = this.permissaoRepository.findAll();
 		return new ResponseEntity<Iterable<Permissao>>(lista,HttpStatus.OK);
