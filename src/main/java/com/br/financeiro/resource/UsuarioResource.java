@@ -23,11 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.br.financeiro.event.RecursoCriadoEvent;
 import com.br.financeiro.model.Usuario;
+import com.br.financeiro.repository.UsuarioRepository;
 import com.br.financeiro.service.UsuarioService;
 
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioResource {
+	
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 	
 	@Autowired
 	private UsuarioService usuarioService;
@@ -82,5 +86,15 @@ public class UsuarioResource {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void excluir(@PathVariable("id") Long id){
 		this.usuarioService.excluir(id);
+	}
+	
+	@GetMapping("/validar-autenticacao/{email}")
+	public ResponseEntity<Boolean> validarAutenticacao(@PathVariable("email") String email) {
+		 Optional<Usuario> entidade = this.usuarioRepository.findByEmail(email);
+		 if(entidade.isPresent() && entidade.get().getSituacao().toString() == "ATIVO") {
+			 return ResponseEntity.ok(true);
+		 }else {
+			 return ResponseEntity.ok(false);
+		 }
 	}
 }
