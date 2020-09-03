@@ -3,6 +3,7 @@ package com.br.financeiro.repository.lancamentoImpl;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -12,25 +13,53 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
+import com.br.financeiro.exceptionhandler.CustomRuntimeException;
 import com.br.financeiro.model.Categoria_;
 import com.br.financeiro.model.Lancamento;
 import com.br.financeiro.model.Lancamento_;
+import com.br.financeiro.model.Pessoa;
 import com.br.financeiro.model.Pessoa_;
 import com.br.financeiro.model.dto.LancamentoEstatisticaCategoria;
 import com.br.financeiro.model.dto.LancamentoEstatisticaDia;
 import com.br.financeiro.model.dto.LancamentoEstatisticaPessoa;
 import com.br.financeiro.model.filter.LancamentoFilter;
 import com.br.financeiro.model.projection.ResumoLancamento;
+import com.br.financeiro.service.PessoaService;
 
 public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 
 	@PersistenceContext
 	private EntityManager manager;
+	
+	@Autowired
+	private PessoaService pessoaService;
+	
+	@Override
+	public List<LancamentoEstatisticaPessoa> porPessoaById(Long id) {
+		Optional<Pessoa> buscarPessoa = pessoaService.buscarPorId(id);
+		if(!buscarPessoa.isPresent()) {
+			throw new CustomRuntimeException("Erro ao buscar pessoa!");
+		}
+		
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		CriteriaQuery<LancamentoEstatisticaPessoa> criteriaQuery = criteriaBuilder.
+				createQuery(LancamentoEstatisticaPessoa.class);
+		Root<Lancamento> root = criteriaQuery.from(Lancamento.class);
+		criteriaQuery.select(criteriaBuilder.construct(LancamentoEstatisticaPessoa.class, 
+				root.get(Lancamento_.tipo),
+				root.get(Lancamento_.pessoa),
+				criteriaBuilder.sum(root.get(Lancamento_.valor))));
+		criteriaQuery.where(criteriaBuilder.equal(root.get(Lancamento_.pessoa), buscarPessoa.get()));
+		criteriaQuery.groupBy(root.get(Lancamento_.tipo), root.get(Lancamento_.pessoa));
+		TypedQuery<LancamentoEstatisticaPessoa> typedQuery = manager.createQuery(criteriaQuery);
+		return typedQuery.getResultList();
+	}
 	
 	@Override
 	public List<LancamentoEstatisticaPessoa> porPessoa(LocalDate inicio, LocalDate fim) {
@@ -163,10 +192,13 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 			Root<Lancamento> root) {
 		List<Predicate> predicates = new ArrayList<>();
 		
-//		if(lancamentoFilter.getPessoa() > 0) {
-//			predicates.add(builder.equal(root.join(Lancamento_.pessoa),
-//					lancamentoFilter.getPessoa()));
-//		}
+		if(lancamentoFilter.getPessoa() > 0) {
+			Optional<Pessoa> buscarPessoa = pessoaService.buscarPorId(lancamentoFilter.getPessoa());
+			if(!buscarPessoa.isPresent()) {
+				throw new CustomRuntimeException("Erro ao buscar pessoa!");
+			}
+			predicates.add(builder.equal(root.get(Lancamento_.pessoa), buscarPessoa.get()));
+		}
 		
 		if (!StringUtils.isEmpty(lancamentoFilter.getDescricao())) {
 			predicates.add(builder.like(

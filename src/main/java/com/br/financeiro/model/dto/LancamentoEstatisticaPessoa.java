@@ -7,7 +7,7 @@ import com.br.financeiro.model.TipoLancamento;
 
 public class LancamentoEstatisticaPessoa {
 	
-private TipoLancamento tipo;
+	private TipoLancamento tipo;
 	
 	private Pessoa pessoa;
 	

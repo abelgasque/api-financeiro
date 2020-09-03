@@ -2,6 +2,7 @@ package com.br.financeiro.resource;
 
 import java.util.Optional;
 
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -57,7 +58,8 @@ public class CategoriaResource {
 	}
 	
 	@GetMapping
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
+	@PreAuthorize("#oauth2.hasScope('read')")
+	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
 	public ResponseEntity<?> listar(){
 		Iterable<Categoria> lista = this.categoriaService.listar();
 		return new ResponseEntity<Iterable<Categoria>>(lista,HttpStatus.OK);

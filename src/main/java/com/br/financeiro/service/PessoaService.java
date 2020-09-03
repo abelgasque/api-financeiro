@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.br.financeiro.exceptionhandler.CustomRuntimeException;
 import com.br.financeiro.model.Pessoa;
+import com.br.financeiro.model.Usuario;
 import com.br.financeiro.model.filter.PessoaFilter;
 import com.br.financeiro.repository.PessoaRepository;
 
@@ -20,6 +21,9 @@ public class PessoaService {
 	@Autowired
 	private PessoaRepository pessoaRepository; 
 	
+	@Autowired
+	private UsuarioService usuarioService;
+	
 	public Page<Pessoa> pesquisar(PessoaFilter filtro, Pageable pageable){
 		return this.pessoaRepository.filtrar(filtro, pageable);
 	}
@@ -28,6 +32,10 @@ public class PessoaService {
 		Optional<Pessoa> pesquisarPorCpf = this.pessoaRepository.findByCpf(entidade.getCpf());
 		if(pesquisarPorCpf.isPresent()) {
 			throw new CustomRuntimeException("cpf já existe!");
+		}
+		if(entidade.getUsuario().getId() == 0) {
+			Usuario usuarioSalvo = this.usuarioService.salvar(entidade.getUsuario());
+			entidade.setUsuario(usuarioSalvo);
 		}
 		entidade.getContatos().forEach(c -> c.setPessoa(entidade));
 		return this.pessoaRepository.save(entidade);

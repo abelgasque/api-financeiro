@@ -2,6 +2,7 @@ package com.br.financeiro.resource;
 
 import java.util.Optional;
 
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -44,8 +45,7 @@ public class PessoaResource {
 		 return new ResponseEntity<Page<Pessoa>>(lista,HttpStatus.OK);
 	}
 	
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('write')")
-	@PostMapping
+	@PostMapping("/adicionar")
 	public ResponseEntity<?> salvar(@Valid @RequestBody Pessoa entidade, HttpServletResponse response) {
 		Pessoa entidadeSalva = pessoaService.salvar(entidade);
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, entidadeSalva.getId()));
@@ -66,11 +66,12 @@ public class PessoaResource {
 		 return entidade != null ? ResponseEntity.ok(entidade) : ResponseEntity.notFound().build();
 	}
 	
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
+	@PreAuthorize("#oauth2.hasScope('read')")
+	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
 	@GetMapping("/buscar-por-usuario/{idUsuario}")
 	public ResponseEntity<?> buscarUsuarioById(@PathVariable("idUsuario") Long idUsuario) {
 		Optional<Pessoa> entidade = pessoaService.buscarUsuarioById(idUsuario);
-		return entidade != null ? ResponseEntity.ok(entidade) : ResponseEntity.notFound().build();
+		return entidade.isPresent() ? ResponseEntity.ok(entidade) : ResponseEntity.notFound().build();
 	}
 	
 	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")

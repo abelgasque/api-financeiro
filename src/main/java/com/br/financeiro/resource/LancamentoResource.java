@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -40,6 +41,7 @@ import com.br.financeiro.model.Lancamento;
 import com.br.financeiro.model.dto.Anexo;
 import com.br.financeiro.model.dto.LancamentoEstatisticaCategoria;
 import com.br.financeiro.model.dto.LancamentoEstatisticaDia;
+import com.br.financeiro.model.dto.LancamentoEstatisticaPessoa;
 import com.br.financeiro.model.filter.LancamentoFilter;
 import com.br.financeiro.model.projection.ResumoLancamento;
 import com.br.financeiro.repository.LancamentoRepository;
@@ -68,14 +70,17 @@ public class LancamentoResource {
 	@Autowired
 	private S3 s3;
 	
+	
+	@PreAuthorize("#oauth2.hasScope('write')")
+	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
 	@PostMapping("/anexo")
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('write')")
 	public Anexo uploadAnexo(@RequestParam MultipartFile anexo) throws IOException {
 		String nome = s3.salvarTemporariamente(anexo);
 		return new Anexo(nome, s3.configurarUrl(nome));
 	}
 	
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
+	@PreAuthorize("#oauth2.hasScope('read')")
+	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
 	@GetMapping("/relatorios/por-pessoa")
 	public ResponseEntity<byte[]> relatorioPorPessoa(
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate inicio, 
@@ -85,6 +90,13 @@ public class LancamentoResource {
 		
 		return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE)
 				.body(relatorio);
+	}
+	
+	@PreAuthorize("#oauth2.hasScope('read')")
+	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
+	@GetMapping("/estatisticas/por-pessoa-by-id/{id}")
+	public List<LancamentoEstatisticaPessoa> porPessoaById(@PathVariable("id") Long id){
+		return this.lancamentoRepository.porPessoaById(id);
 	}
 	
 	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
@@ -99,20 +111,15 @@ public class LancamentoResource {
 		return this.lancamentoRepository.porDia(LocalDate.now());
 	}
 	
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
-	@GetMapping("/pesquisar")
-	public ResponseEntity<?> pesquisar(LancamentoFilter filtro, Pageable pageable) {
-		 Page<Lancamento> lista = lancamentoService.pesquisar(filtro, pageable);
-		 return new ResponseEntity<Page<Lancamento>>(lista,HttpStatus.OK);
-	}
-	
 	@GetMapping(params = "resumo")
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
+	@PreAuthorize("#oauth2.hasScope('read')")
+	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
 	public Page<ResumoLancamento> resumir(LancamentoFilter lancamentoFilter, Pageable pageable) {
 		return lancamentoRepository.resumir(lancamentoFilter, pageable);
 	}
 	
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('write')")
+	@PreAuthorize("#oauth2.hasScope('write')")
+	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
 	@PostMapping
 	public ResponseEntity<?> salvar(@Valid @RequestBody Lancamento entidade, HttpServletResponse response) {
 		Lancamento entidadeSalva = lancamentoService.salvar(entidade);
@@ -120,14 +127,16 @@ public class LancamentoResource {
 		return ResponseEntity.status(HttpStatus.CREATED).body(entidadeSalva);
 	}
 	
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('write')")
+	@PreAuthorize("#oauth2.hasScope('write')")
+	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
 	@PutMapping
 	public ResponseEntity<?> editar(@RequestBody Lancamento entidade){
 		Lancamento entidadeSalva = this.lancamentoService.editar(entidade);	
 		return new  ResponseEntity<Lancamento>(entidadeSalva,HttpStatus.OK);
 	}
 	
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
+	@PreAuthorize("#oauth2.hasScope('read')")
+	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
 	@GetMapping("/{id}")
 	public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
 		 Optional<Lancamento> entidade = lancamentoService.buscarPorId(id);

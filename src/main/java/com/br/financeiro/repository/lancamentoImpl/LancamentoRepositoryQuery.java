@@ -15,6 +15,7 @@ import com.br.financeiro.model.projection.ResumoLancamento;
 
 public interface LancamentoRepositoryQuery {
 	
+	public List<LancamentoEstatisticaPessoa> porPessoaById(Long id);
 	public List<LancamentoEstatisticaPessoa> porPessoa(LocalDate inicio, LocalDate fim);
 	public List<LancamentoEstatisticaCategoria> porCategoria(LocalDate mesReferencia);
 	public List<LancamentoEstatisticaDia> porDia(LocalDate mesReferencia);
