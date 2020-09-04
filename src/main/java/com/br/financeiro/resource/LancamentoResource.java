@@ -40,6 +40,7 @@ import com.br.financeiro.exceptionhandler.ApiExeptionHandler.Erro;
 import com.br.financeiro.model.Lancamento;
 import com.br.financeiro.model.dto.Anexo;
 import com.br.financeiro.model.dto.LancamentoEstatisticaCategoria;
+import com.br.financeiro.model.dto.LancamentoEstatisticaDia;
 import com.br.financeiro.model.dto.LancamentoEstatisticaMes;
 import com.br.financeiro.model.dto.LancamentoEstatisticaPessoa;
 import com.br.financeiro.model.filter.LancamentoFilter;
@@ -94,6 +95,15 @@ public class LancamentoResource {
 	
 	@PreAuthorize("#oauth2.hasScope('read')")
 	@RolesAllowed({ "ROLE_ADMINISTRADO"})
+	@GetMapping("/estatisticas/por-tipo-mensal")
+	public List<LancamentoEstatisticaDia> estatisticasPorTipoMensal(){
+		LocalDate mesReferencia = LocalDate.now();
+		Long idPessoa = (long) 0;
+		return this.lancamentoRepository.porDia(mesReferencia, idPessoa);
+	}
+	
+	@PreAuthorize("#oauth2.hasScope('read')")
+	@RolesAllowed({ "ROLE_ADMINISTRADO"})
 	@GetMapping("/estatisticas/por-mes/{anoReferencia}/{idPessoa}")
 	public List<LancamentoEstatisticaMes> porAno(@PathVariable("anoReferencia") int anoReferencia, @PathVariable("idPessoa") Long idPessoa){
 		return this.lancamentoService.estatisticasPorMes(anoReferencia, idPessoa);
@@ -107,9 +117,9 @@ public class LancamentoResource {
 	}
 	
 	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
-	@GetMapping("/estatisticas/por-categoria")
-	public List<LancamentoEstatisticaCategoria> porCategoria(){
-		return this.lancamentoRepository.porCategoria(LocalDate.now());
+	@GetMapping("/estatisticas/por-categoria/{idPessoa}")
+	public List<LancamentoEstatisticaCategoria> porCategoria(@PathVariable("idPessoa") Long id){
+		return this.lancamentoRepository.porCategoria(LocalDate.now(), id);
 	}
 	
 	@GetMapping(params = "resumo")
