@@ -91,9 +91,9 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 	}
 	
 	@Override
-	public List<LancamentoEstatisticaDia> porDia(LocalDate mesReferencia) {
+	public List<LancamentoEstatisticaDia> porDia(LocalDate mesReferencia, Long idPessoa) {
 		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
-		
+		List<Predicate> predicates = new ArrayList<>();
 		CriteriaQuery<LancamentoEstatisticaDia> criteriaQuery = criteriaBuilder.
 				createQuery(LancamentoEstatisticaDia.class);
 		
@@ -107,11 +107,17 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 		LocalDate primeiroDia = mesReferencia.withDayOfMonth(1);
 		LocalDate ultimoDia = mesReferencia.withDayOfMonth(mesReferencia.lengthOfMonth());
 		
-		criteriaQuery.where(
-				criteriaBuilder.greaterThanOrEqualTo(root.get(Lancamento_.dataVencimento), 
-						primeiroDia),
-				criteriaBuilder.lessThanOrEqualTo(root.get(Lancamento_.dataVencimento), 
-						ultimoDia));
+		if(idPessoa > 0) {
+			Optional<Pessoa> pessoa = this.pessoaService.buscarPorId(idPessoa);
+			if(!pessoa.isPresent()) {
+				throw new CustomRuntimeException("Erro ao buscar pessoa!");
+			}
+			predicates.add(criteriaBuilder.equal(root.get(Lancamento_.pessoa), pessoa.get()));
+		}
+		predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(Lancamento_.dataVencimento), primeiroDia));
+		predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get(Lancamento_.dataVencimento), ultimoDia));
+		Predicate[] where = predicates.toArray(new Predicate[predicates.size()]);
+		criteriaQuery.where(where);
 		
 		criteriaQuery.groupBy(root.get(Lancamento_.tipo), root.get(Lancamento_.dataVencimento));
 		
@@ -180,8 +186,7 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 				, root.get(Lancamento_.pessoa).get(Pessoa_.nome)));
 		
 		Predicate[] predicates = criarRestricoes(lancamentoFilter, builder, root);
-		criteria.where(predicates);
-		
+		criteria.where(predicates).orderBy(builder.desc(root.get(Lancamento_.dataVencimento)));
 		TypedQuery<ResumoLancamento> query = manager.createQuery(criteria);
 		adicionarRestricoesDePaginacao(query, pageable);
 		

@@ -40,7 +40,7 @@ import com.br.financeiro.exceptionhandler.ApiExeptionHandler.Erro;
 import com.br.financeiro.model.Lancamento;
 import com.br.financeiro.model.dto.Anexo;
 import com.br.financeiro.model.dto.LancamentoEstatisticaCategoria;
-import com.br.financeiro.model.dto.LancamentoEstatisticaDia;
+import com.br.financeiro.model.dto.LancamentoEstatisticaMes;
 import com.br.financeiro.model.dto.LancamentoEstatisticaPessoa;
 import com.br.financeiro.model.filter.LancamentoFilter;
 import com.br.financeiro.model.projection.ResumoLancamento;
@@ -93,6 +93,13 @@ public class LancamentoResource {
 	}
 	
 	@PreAuthorize("#oauth2.hasScope('read')")
+	@RolesAllowed({ "ROLE_ADMINISTRADO"})
+	@GetMapping("/estatisticas/por-mes/{anoReferencia}/{idPessoa}")
+	public List<LancamentoEstatisticaMes> porAno(@PathVariable("anoReferencia") int anoReferencia, @PathVariable("idPessoa") Long idPessoa){
+		return this.lancamentoService.estatisticasPorMes(anoReferencia, idPessoa);
+	}
+	
+	@PreAuthorize("#oauth2.hasScope('read')")
 	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
 	@GetMapping("/estatisticas/por-pessoa-by-id/{id}")
 	public List<LancamentoEstatisticaPessoa> porPessoaById(@PathVariable("id") Long id){
@@ -103,12 +110,6 @@ public class LancamentoResource {
 	@GetMapping("/estatisticas/por-categoria")
 	public List<LancamentoEstatisticaCategoria> porCategoria(){
 		return this.lancamentoRepository.porCategoria(LocalDate.now());
-	}
-	
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
-	@GetMapping("/estatisticas/por-dia")
-	public List<LancamentoEstatisticaDia> porDia(){
-		return this.lancamentoRepository.porDia(LocalDate.now());
 	}
 	
 	@GetMapping(params = "resumo")
@@ -141,13 +142,6 @@ public class LancamentoResource {
 	public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
 		 Optional<Lancamento> entidade = lancamentoService.buscarPorId(id);
 		 return entidade != null ? ResponseEntity.ok(entidade) : ResponseEntity.notFound().build();
-	}
-	
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
-	@GetMapping
-	public ResponseEntity<?> listar(){
-		Iterable<Lancamento> lista = this.lancamentoService.listar();
-		return new ResponseEntity<Iterable<Lancamento>>(lista,HttpStatus.OK);
 	}
 	
 	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")

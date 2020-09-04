@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -13,12 +15,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.br.financeiro.event.RecursoCriadoEvent;
 import com.br.financeiro.model.Usuario;
 import com.br.financeiro.repository.UsuarioRepository;
 import com.br.financeiro.service.UsuarioService;
@@ -43,12 +47,13 @@ public class UsuarioResource {
 //		 return new ResponseEntity<Page<Usuario>>(lista,HttpStatus.OK);
 //	}
 	
-//	@PostMapping("/adicionar")
-//	public ResponseEntity<?> salvar(@Valid @RequestBody Usuario entidade, HttpServletResponse response) {
-//		Usuario entidadeSalva = usuarioService.salvar(entidade);
-//		publisher.publishEvent(new RecursoCriadoEvent(this, response, entidadeSalva.getId()));
-//		return ResponseEntity.status(HttpStatus.CREATED).body(entidadeSalva);
-//	}
+	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('write')")
+	@PostMapping("/adicionar")
+	public ResponseEntity<?> salvar(@Valid @RequestBody Usuario entidade, HttpServletResponse response) {
+		Usuario entidadeSalva = usuarioService.salvar(entidade);
+		publisher.publishEvent(new RecursoCriadoEvent(this, response, entidadeSalva.getId()));
+		return ResponseEntity.status(HttpStatus.CREATED).body(entidadeSalva);
+	}
 	
 	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('write')")
 	@PutMapping
