@@ -115,10 +115,9 @@ public class LancamentoService {
 	}
 	
 	public List<LancamentoEstatisticaMes> estatisticasPorMes(int anoReferencia, Long idPessoa) {
-		LocalDate mesReferencia = LocalDate.now();
 		List<LancamentoEstatisticaMes> retorno = new ArrayList<LancamentoEstatisticaMes>();
 		for(int i = 1; i<=12;i++) {
-			mesReferencia = mesReferencia.withMonth(i);
+			LocalDate mesReferencia = LocalDate.of(anoReferencia, i, 1);
 			List<LancamentoEstatisticaDia> estatisticas = this.lancamentoRepository.porDia(mesReferencia, idPessoa);
 			BigDecimal totalReceitas = new BigDecimal(0.0);
 			BigDecimal totalDespesas = new BigDecimal(0.0);
