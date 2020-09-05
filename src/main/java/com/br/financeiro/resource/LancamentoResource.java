@@ -116,7 +116,8 @@ public class LancamentoResource {
 		return this.lancamentoRepository.porPessoaById(id);
 	}
 	
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
+	@PreAuthorize("#oauth2.hasScope('read')")
+	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
 	@GetMapping("/estatisticas/por-categoria/{idPessoa}")
 	public List<LancamentoEstatisticaCategoria> porCategoria(@PathVariable("idPessoa") Long id){
 		return this.lancamentoRepository.porCategoria(LocalDate.now(), id);
