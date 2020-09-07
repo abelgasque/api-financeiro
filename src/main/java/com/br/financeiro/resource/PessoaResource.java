@@ -52,14 +52,16 @@ public class PessoaResource {
 		return ResponseEntity.status(HttpStatus.CREATED).body(entidadeSalva);
 	}
 	
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('write')")
+	@PreAuthorize("#oauth2.hasScope('write')")
+	@RolesAllowed({ "ROLE_ADMINISTRADOR", "ROLE_PESSOA" })
 	@PutMapping
 	public ResponseEntity<?> editar(@RequestBody Pessoa entidade){
 		Pessoa entidadeSalva = this.pessoaService.editar(entidade);	
 		return new  ResponseEntity<Pessoa>(entidadeSalva,HttpStatus.OK);
 	}
 	
-	@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') and #oauth2.hasScope('read')")
+	@PreAuthorize("#oauth2.hasScope('read')")
+	@RolesAllowed({ "ROLE_ADMINISTRADOR", "ROLE_PESSOA" })
 	@GetMapping("/{id}")
 	public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
 		 Optional<Pessoa> entidade = pessoaService.buscarPorId(id);
@@ -67,7 +69,7 @@ public class PessoaResource {
 	}
 	
 	@PreAuthorize("#oauth2.hasScope('read')")
-	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
+	@RolesAllowed({ "ROLE_ADMINISTRADOR", "ROLE_PESSOA" })
 	@GetMapping("/buscar-por-usuario/{idUsuario}")
 	public ResponseEntity<?> buscarUsuarioById(@PathVariable("idUsuario") Long idUsuario) {
 		Optional<Pessoa> entidade = pessoaService.buscarUsuarioById(idUsuario);

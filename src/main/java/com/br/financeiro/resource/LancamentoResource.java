@@ -73,7 +73,7 @@ public class LancamentoResource {
 	
 	
 	@PreAuthorize("#oauth2.hasScope('write')")
-	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
+	@RolesAllowed({ "ROLE_ADMINISTRADOR", "ROLE_PESSOA" })
 	@PostMapping("/anexo")
 	public Anexo uploadAnexo(@RequestParam MultipartFile anexo) throws IOException {
 		String nome = s3.salvarTemporariamente(anexo);
@@ -81,7 +81,7 @@ public class LancamentoResource {
 	}
 	
 	@PreAuthorize("#oauth2.hasScope('read')")
-	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
+	@RolesAllowed({ "ROLE_ADMINISTRADOR", "ROLE_PESSOA" })
 	@GetMapping("/relatorios/por-pessoa")
 	public ResponseEntity<byte[]> relatorioPorPessoa(
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate inicio, 
@@ -94,7 +94,7 @@ public class LancamentoResource {
 	}
 	
 	@PreAuthorize("#oauth2.hasScope('read')")
-	@RolesAllowed({ "ROLE_ADMINISTRADO"})
+	@RolesAllowed({ "ROLE_ADMINISTRADOR", "ROLE_PESSOA" })
 	@GetMapping("/estatisticas/por-tipo-mensal")
 	public List<LancamentoEstatisticaDia> estatisticasPorTipoMensal(){
 		LocalDate mesReferencia = LocalDate.now();
@@ -103,21 +103,21 @@ public class LancamentoResource {
 	}
 	
 	@PreAuthorize("#oauth2.hasScope('read')")
-	@RolesAllowed({ "ROLE_ADMINISTRADO"})
+	@RolesAllowed({ "ROLE_ADMINISTRADOR", "ROLE_PESSOA" })
 	@GetMapping("/estatisticas/por-mes/{anoReferencia}/{idPessoa}")
 	public List<LancamentoEstatisticaMes> porAno(@PathVariable("anoReferencia") int anoReferencia, @PathVariable("idPessoa") Long idPessoa){
 		return this.lancamentoService.estatisticasPorMes(anoReferencia, idPessoa);
 	}
 	
 	@PreAuthorize("#oauth2.hasScope('read')")
-	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
+	@RolesAllowed({ "ROLE_ADMINISTRADOR", "ROLE_PESSOA" })
 	@GetMapping("/estatisticas/por-pessoa-by-id/{id}")
 	public List<LancamentoEstatisticaPessoa> porPessoaById(@PathVariable("id") Long id){
 		return this.lancamentoRepository.porPessoaById(id);
 	}
 	
 	@PreAuthorize("#oauth2.hasScope('read')")
-	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
+	@RolesAllowed({ "ROLE_ADMINISTRADOR", "ROLE_PESSOA" })
 	@GetMapping("/estatisticas/por-categoria/{idPessoa}")
 	public List<LancamentoEstatisticaCategoria> porCategoria(@PathVariable("idPessoa") Long id){
 		return this.lancamentoRepository.porCategoria(LocalDate.now(), id);
@@ -125,13 +125,13 @@ public class LancamentoResource {
 	
 	@GetMapping(params = "resumo")
 	@PreAuthorize("#oauth2.hasScope('read')")
-	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
+	@RolesAllowed({ "ROLE_ADMINISTRADOR", "ROLE_PESSOA" })
 	public Page<ResumoLancamento> resumir(LancamentoFilter lancamentoFilter, Pageable pageable) {
 		return lancamentoRepository.resumir(lancamentoFilter, pageable);
 	}
 	
 	@PreAuthorize("#oauth2.hasScope('write')")
-	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
+	@RolesAllowed({ "ROLE_ADMINISTRADOR", "ROLE_PESSOA" })
 	@PostMapping
 	public ResponseEntity<?> salvar(@Valid @RequestBody Lancamento entidade, HttpServletResponse response) {
 		Lancamento entidadeSalva = lancamentoService.salvar(entidade);
@@ -140,7 +140,7 @@ public class LancamentoResource {
 	}
 	
 	@PreAuthorize("#oauth2.hasScope('write')")
-	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
+	@RolesAllowed({ "ROLE_ADMINISTRADOR", "ROLE_PESSOA" })
 	@PutMapping
 	public ResponseEntity<?> editar(@RequestBody Lancamento entidade){
 		Lancamento entidadeSalva = this.lancamentoService.editar(entidade);	
@@ -148,7 +148,7 @@ public class LancamentoResource {
 	}
 	
 	@PreAuthorize("#oauth2.hasScope('read')")
-	@RolesAllowed({ "ROLE_ADMINISTRADO", "ROLE_PESSOA" })
+	@RolesAllowed({ "ROLE_ADMINISTRADOR", "ROLE_PESSOA" })
 	@GetMapping("/{id}")
 	public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
 		 Optional<Lancamento> entidade = lancamentoService.buscarPorId(id);
